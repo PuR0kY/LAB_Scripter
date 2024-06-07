@@ -58,7 +58,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgments
 
 Thanks to the VS Code team for creating such an extensible and powerful editor.
-
----
-
-Feel free to modify this README to better suit your needs or to add more detailed information.
