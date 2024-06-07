@@ -1,71 +1,60 @@
-# lab-scripter README
+# LAB Scripter
 
-This is the README for your extension "lab-scripter". After writing up a brief description, we recommend including the following sections.
+LAB Scripter is a VS Code extension that allows you to manage and execute PowerShell scripts directly from the VS Code explorer. This extension enables quick execution of scripts with a left-click and easy editing with a right-click context menu option.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Execute Scripts**: Left-click on a script in the LAB Scripter view to run it.
+- **Edit Scripts**: Right-click on a script and select "Edit Script" to open it for editing in VS Code.
+- **Customizable Script Path**: Configure the path to your scripts directory in the extension settings.
 
-For example if there is an image subfolder under your extension project workspace:
+## Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Clone or download this repository.
+2. Open the folder in VS Code.
+3. Run `npm install` to install the necessary dependencies.
+4. Open the command palette (Ctrl+Shift+P) and select `Developer: Install Extension from Location`, then choose the folder of this extension.
+5. Reload VS Code.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Configuration
 
-## Requirements
+You can configure the path to your PowerShell scripts directory in the extension settings.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. Open the settings (File > Preferences > Settings or Ctrl+,).
+2. Search for `lab.scriptsPath`.
+3. Set the path to your desired scripts directory. If not set, it defaults to `C:\Users\<YourUsername>\AppData\Roaming\LAB\Scripts`.
 
-## Extension Settings
+## Usage
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. Open the LAB Scripter view in the VS Code explorer.
+2. The view will display all scripts located in the configured scripts directory.
+3. Left-click on a script to execute it.
+4. Right-click on a script and select "Edit Script" to open it for editing.
 
-For example:
+## Development
 
-This extension contributes the following settings:
+To work on the extension, follow these steps:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+1. Clone the repository.
+2. Open the folder in VS Code.
+3. Run `npm install` to install dependencies.
+4. Make your changes to the extension.
+5. Compile the extension using `npm run compile`.
+6. Test the extension using `npm run watch` and run the extension in a new VS Code window (F5).
 
-## Known Issues
+## Commands
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- `lab.runScript`: Executes the selected PowerShell script.
+- `lab.editScript`: Opens the selected PowerShell script for editing.
 
-## Release Notes
+## Contributing
 
-Users appreciate release notes as you update your extension.
+Contributions are welcome! Please feel free to submit a pull request or open an issue to discuss any changes.
 
-### 1.0.0
+## License
 
-Initial release of ...
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-### 1.0.1
+## Acknowledgments
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Thanks to the VS Code team for creating such an extensible and powerful editor.
