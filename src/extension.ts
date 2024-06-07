@@ -78,7 +78,7 @@ class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> 
     getFilesInFolder(folderPath: string): CustomTreeItem[] {
         try {
             const files = fs.readdirSync(folderPath);
-            return files.map(file => new CustomTreeItem(file));
+            return files.map(file => new CustomTreeItem(file, vscode.TreeItemCollapsibleState.None));
         } catch (error) {
             console.error('Error reading folder:', error);
             return [];
@@ -89,8 +89,18 @@ class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> 
 }
 
 class CustomTreeItem extends vscode.TreeItem {
-    constructor(public readonly label: string) {
-        super(label, vscode.TreeItemCollapsibleState.None);
+    constructor(
+        public readonly label: string,
+        collapsibleState: vscode.TreeItemCollapsibleState
+    ) {
+        super(label, collapsibleState);
+        this.contextValue = 'scriptItem';
+        this.command = {
+            command: 'lab.editScript',
+            title: 'Edit Script',            
+            arguments: [this],
+        };
+        this.iconPath = new vscode.ThemeIcon('console');        
     }
 }
 

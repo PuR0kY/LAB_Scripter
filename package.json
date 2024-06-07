@@ -2,6 +2,7 @@
   "name": "lab",
   "publisher": "MatejPur",
   "displayName": "LAB",
+  "icon": "./Assets/icon.png",
   "description": "",
   "repository": {
     "url": "https://github.com/PuR0kY/LAB_Scripter"
@@ -13,7 +14,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [ "onView:lab"],
+  "activationEvents": [
+    "onView:lab"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": [
@@ -44,7 +47,8 @@
       },
       {
         "command": "lab.editScript",
-        "title": "Edit Script"
+        "title": "Edit Script",
+        "icon": "$(extensions-configure-recommended)"
       }
     ],
     "menus": {
