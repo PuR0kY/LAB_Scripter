@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
-	const config = vscode.workspace.getConfiguration('lab');
+    const config = vscode.workspace.getConfiguration('lab');
     let source = config.get<string>('scriptsPath', path.join(process.env.APPDATA!, 'LAB', 'Scripts'));
     if (source === "") {
         source = path.join(process.env.APPDATA!, 'LAB', 'Scripts');
@@ -16,19 +16,19 @@ export function activate(context: vscode.ExtensionContext) {
     // Command to run the PowerShell script
     let runDisposable = vscode.commands.registerCommand('lab.runScript', (item: CustomTreeItem) => {
         const scriptPath = path.join(source, item.label);
-        
+
         exec(`powershell.exe -executionpolicy bypass -file "${scriptPath}"`, (error, stdout, stderr) => {
-			if (error) {
-				vscode.window.showErrorMessage(`Error executing script: ${error.message}`);
-				return;
-			}
-			if (stderr) {
-				vscode.window.showErrorMessage(`Powershell Errors: ${stderr}`);
-				return;
-			}
-			vscode.window.showInformationMessage(`Powershell Data: ${stdout}`);
-			vscode.window.showInformationMessage("Powershell Script finished successfully");
-		});
+            if (error) {
+                vscode.window.showErrorMessage(`Error executing script: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                vscode.window.showErrorMessage(`Powershell Errors: ${stderr}`);
+                return;
+            }
+            vscode.window.showInformationMessage(`Powershell Data: ${stdout}`);
+            vscode.window.showInformationMessage("Powershell Script finished successfully");
+        });
     });
 
     // Command to open the PowerShell script for editing
@@ -52,12 +52,27 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.commands.executeCommand('lab.editScript', selectedItem);
         }
     });
+    // Function to update the tree view
+    function updateTreeView() {
+        treeDataProvider.refresh();
+    }
+
+    // Schedule periodic updates
+    const interval = setInterval(updateTreeView, 5000); // Update every minute
+    // Dispose of interval when extension is deactivated
+    context.subscriptions.push(vscode.Disposable.from(treeView, { dispose: () => clearInterval(interval!) }));
 
     context.subscriptions.push(runDisposable);
     context.subscriptions.push(editDisposable);
 }
 
 class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> {
+    private _onDidChangeTreeData: vscode.EventEmitter<CustomTreeItem | undefined | null | void> = new vscode.EventEmitter<CustomTreeItem | undefined | null | void>();
+    readonly onDidChangeTreeData: vscode.Event<CustomTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
+
+    refresh() {
+        this._onDidChangeTreeData.fire();
+    }
     folderPath: string;
     constructor(folderPath: string) {
         this.folderPath = folderPath;
@@ -84,8 +99,6 @@ class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> 
             return [];
         }
     }
-
-    onDidChangeTreeData?: vscode.Event<void | CustomTreeItem | null | undefined> | undefined;
 }
 
 class CustomTreeItem extends vscode.TreeItem {
@@ -97,11 +110,11 @@ class CustomTreeItem extends vscode.TreeItem {
         this.contextValue = 'scriptItem';
         this.command = {
             command: 'lab.editScript',
-            title: 'Edit Script',            
+            title: 'Edit Script',
             arguments: [this],
         };
-        this.iconPath = new vscode.ThemeIcon('console');        
+        this.iconPath = new vscode.ThemeIcon('console');
     }
 }
 
-export function deactivate() {}
+export function deactivate() { }
