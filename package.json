@@ -2,7 +2,7 @@
   "name": "lab",
   "publisher": "MatejPur",
   "displayName": "LAB",
-  "icon": "./Assets/icon.png",
+  "icon": "src/Assets/icon.png",
   "description": "",
   "repository": {
     "url": "https://github.com/PuR0kY/LAB_Scripter"
