@@ -1,7 +1,11 @@
 {
   "name": "lab",
+  "publisher": "MatejPur",
   "displayName": "LAB",
   "description": "",
+  "repository": {
+    "url": "https://github.com/PuR0kY/LAB_Scripter"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.89.0"
