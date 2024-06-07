@@ -7,7 +7,7 @@
   "repository": {
     "url": "https://github.com/PuR0kY/LAB_Scripter"
   },
-  "version": "0.0.1",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.89.0"
   },
