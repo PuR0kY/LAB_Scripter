@@ -9,31 +9,45 @@ export function activate(context: vscode.ExtensionContext) {
     if (source === "") {
         source = path.join(process.env.APPDATA!, 'LAB', 'Scripts');
     }
-    console.log(`Congratulations, your extension "lab" is now active! Scripts path: ${source}`);
-
+    let lab = vscode.window.createOutputChannel("LAB");
+    lab.appendLine(`Congratulations, your extension "lab" is now active! Scripts path: ${source}`);
     const treeDataProvider = new CustomTreeDataProvider(source);
     const treeView = vscode.window.createTreeView('lab', { treeDataProvider, showCollapseAll: true });
+    context.subscriptions.push(treeView);
+
+    let lastSelectedTreeItem: CustomTreeItem | undefined;
+
     // Command to run the PowerShell script
-    let runDisposable = vscode.commands.registerCommand('lab.runScript', (item: CustomTreeItem) => {
+    let runDisposable = vscode.commands.registerCommand('lab.runScript', async (item: CustomTreeItem) => {
         const scriptPath = path.join(source, item.label);
 
         exec(`powershell.exe -executionpolicy bypass -file "${scriptPath}"`, (error, stdout, stderr) => {
             if (error) {
-                vscode.window.showErrorMessage(`Error executing script: ${error.message}`);
+                lab.appendLine(`Error executing script: ${error.message}`);
                 return;
             }
             if (stderr) {
-                vscode.window.showErrorMessage(`Powershell Errors: ${stderr}`);
+                lab.appendLine(`Powershell Errors: ${stderr}`);
                 return;
             }
-            vscode.window.showInformationMessage(`Powershell Data: ${stdout}`);
+            lab.appendLine(`Powershell Data: ${stdout}`);
             vscode.window.showInformationMessage("Powershell Script finished successfully");
+
+            // If the same item is clicked again, deselect it
+            if (item === lastSelectedTreeItem) {
+                lastSelectedTreeItem = undefined;
+                treeDataProvider.refresh();
+            }
         });
+
+        // Update the last selected item
+        lastSelectedTreeItem = item;
     });
 
     // Command to open the PowerShell script for editing
     let editDisposable = vscode.commands.registerCommand('lab.editScript', (item: CustomTreeItem) => {
         const scriptPath = path.join(source, item.label);
+
         vscode.workspace.openTextDocument(scriptPath).then(document => {
             vscode.window.showTextDocument(document);
         });
@@ -42,25 +56,15 @@ export function activate(context: vscode.ExtensionContext) {
     treeView.onDidChangeSelection(event => {
         const selectedItem = event.selection[0];
         if (selectedItem) {
-            vscode.commands.executeCommand('lab.runScript', selectedItem);
+            // If the same item is clicked again, deselect it
+            if (selectedItem === lastSelectedTreeItem) {
+                lastSelectedTreeItem = undefined;
+                treeDataProvider.refresh();
+            } else {
+                vscode.commands.executeCommand('lab.runScript', selectedItem);
+            }
         }
     });
-
-    treeView.onDidExpandElement(event => {
-        const selectedItem = event.element;
-        if (selectedItem instanceof CustomTreeItem) {
-            vscode.commands.executeCommand('lab.editScript', selectedItem);
-        }
-    });
-    // Function to update the tree view
-    function updateTreeView() {
-        treeDataProvider.refresh();
-    }
-
-    // Schedule periodic updates
-    const interval = setInterval(updateTreeView, 5000); // Update every minute
-    // Dispose of interval when extension is deactivated
-    context.subscriptions.push(vscode.Disposable.from(treeView, { dispose: () => clearInterval(interval!) }));
 
     context.subscriptions.push(runDisposable);
     context.subscriptions.push(editDisposable);
@@ -108,11 +112,6 @@ class CustomTreeItem extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
         this.contextValue = 'scriptItem';
-        this.command = {
-            command: 'lab.editScript',
-            title: 'Edit Script',
-            arguments: [this],
-        };
         this.iconPath = new vscode.ThemeIcon('console');
     }
 }
