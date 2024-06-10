@@ -12,10 +12,8 @@ export function activate(context: vscode.ExtensionContext) {
     let lab = vscode.window.createOutputChannel("LAB");
     lab.appendLine(`Congratulations, your extension "lab" is now active! Scripts path: ${source}`);
     const treeDataProvider = new CustomTreeDataProvider(source);
-    const treeView = vscode.window.createTreeView('lab', { treeDataProvider, showCollapseAll: true });
+    const treeView = vscode.window.createTreeView('lab', { treeDataProvider, showCollapseAll: true, canSelectMany: true });
     context.subscriptions.push(treeView);
-
-    let lastSelectedTreeItem: CustomTreeItem | undefined;
 
     // Command to run the PowerShell script
     let runDisposable = vscode.commands.registerCommand('lab.runScript', async (item: CustomTreeItem) => {
@@ -32,16 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
             lab.appendLine(`Powershell Data: ${stdout}`);
             vscode.window.showInformationMessage("Powershell Script finished successfully");
-
-            // If the same item is clicked again, deselect it
-            if (item === lastSelectedTreeItem) {
-                lastSelectedTreeItem = undefined;
-                treeDataProvider.refresh();
-            }
         });
-
-        // Update the last selected item
-        lastSelectedTreeItem = item;
     });
 
     // Command to open the PowerShell script for editing
@@ -57,12 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
         const selectedItem = event.selection[0];
         if (selectedItem) {
             // If the same item is clicked again, deselect it
-            if (selectedItem === lastSelectedTreeItem) {
-                lastSelectedTreeItem = undefined;
                 treeDataProvider.refresh();
-            } else {
                 vscode.commands.executeCommand('lab.runScript', selectedItem);
-            }
         }
     });
 
