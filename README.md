@@ -1,3 +1,7 @@
+# V1.0.4
+- NEW Feature! Now LAB supports Folders inside main working directory
+
+
 # V1.0.3
 - Refactored controlling system. Now Running scripts is done by clicking on "Run Script" button.
 
