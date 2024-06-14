@@ -48,10 +48,16 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    function updateTreeView() {
+        treeDataProvider.refresh();
+    }
+
+    const interval = setInterval(updateTreeView, 5000);
+    context.subscriptions.push(vscode.Disposable.from(treeView, { dispose: () => clearInterval(interval!) }));
+
     context.subscriptions.push(runDisposable);
     context.subscriptions.push(editDisposable);
 }
-
 
 class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<CustomTreeItem | undefined | null | void> = new vscode.EventEmitter<CustomTreeItem | undefined | null | void>();
@@ -98,7 +104,6 @@ class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> 
         }
     }
 }
-
 
 class CustomTreeItem extends vscode.TreeItem {
     constructor(
