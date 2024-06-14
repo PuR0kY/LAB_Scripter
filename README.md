@@ -1,3 +1,6 @@
+# V1.0.3
+- Refactored controlling system. Now Running scripts is done by clicking on "Run Script" button.
+
 # LAB Scripter
 
 LAB Scripter is a VS Code extension that allows you to manage and execute PowerShell scripts directly from the VS Code explorer. This extension enables quick execution of scripts with a left-click and easy editing with a right-click context menu option.

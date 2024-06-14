@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 import { exec } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
                 lab.appendLine(`Powershell Errors: ${stderr}`);
                 return;
             }
-            lab.appendLine(`Powershell Data: ${stdout}`);
+            // lab.appendLine(`Powershell Data: ${stdout}`);
             vscode.window.showInformationMessage("Powershell Script finished successfully");
         });
     });
@@ -57,7 +57,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<CustomTreeItem | undefined | null | void> = new vscode.EventEmitter<CustomTreeItem | undefined | null | void>();
-    readonly onDidChangeTreeData: vscode.Event<CustomTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
     refresh() {
         this._onDidChangeTreeData.fire();
@@ -97,7 +96,6 @@ class CustomTreeItem extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
         this.contextValue = 'scriptItem';
-        this.iconPath = new vscode.ThemeIcon('console');
     }
 }
 
