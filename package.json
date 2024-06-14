@@ -53,12 +53,17 @@
     "menus": {
       "view/item/context": [
         {
-          "when": "view == lab",
+          "when": "view == lab && viewItem == scriptItem",
           "command": "lab.editScript",
           "group": "inline"
         },
         {
-          "when": "view == lab",
+          "when": "view == lab && viewItem == scriptItem",
+          "command": "lab.runScript",
+          "group": "inline"
+        },
+        {
+          "when": "view == lab && viewItem == folderItem",
           "command": "lab.runScript",
           "group": "inline"
         }
