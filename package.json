@@ -7,9 +7,9 @@
   "repository": {
     "url": "https://github.com/PuR0kY/LAB_Scripter"
   },
-  "version": "1.0.3",
+  "version": "1.0.4",
   "engines": {
-    "vscode": "^1.89.0"
+    "vscode": "^1.94.0"
   },
   "categories": [
     "Other"
@@ -20,7 +20,7 @@
     "configuration": [
       {
         "type": "object",
-        "title": "LAB SCRIPTER",
+        "title": "LAB SCRIPTS",
         "properties": {
           "lab.scriptsPath": {
             "type": "string",
@@ -34,7 +34,7 @@
       "explorer": [
         {
           "id": "lab",
-          "name": "LAB SCRIPTER"
+          "name": "LAB SCRIPTS"
         }
       ]
     },
@@ -71,11 +71,12 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "npx vsce@latest package"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
-    "@types/node": "18.x",
+    "@types/node": "^18.19.59",
     "@types/vscode": "^1.89.0",
     "@typescript-eslint/eslint-plugin": "^7.11.0",
     "@typescript-eslint/parser": "^7.11.0",

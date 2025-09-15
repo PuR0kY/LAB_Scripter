@@ -1,3 +1,6 @@
+# V1.0.4
+- Newly scripts are run as tasks and using terminal, which makes much better output reading and visualization of LAB scripts
+
 # V1.0.3
 - Refactored controlling system. Now Running scripts is done by clicking on "Run Script" button.
 

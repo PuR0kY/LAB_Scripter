@@ -1,102 +1,64 @@
-import vscode from 'vscode';
-import { exec } from 'child_process';
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { CustomTreeItem } from './CustomTreeItem';
+import { CustomTreeDataProvider } from './CustomTreeDataProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     const config = vscode.workspace.getConfiguration('lab');
     let source = config.get<string>('scriptsPath', path.join(process.env.APPDATA!, 'LAB', 'Scripts'));
-    if (source === "") {
+    if (!source) {
         source = path.join(process.env.APPDATA!, 'LAB', 'Scripts');
     }
-    let lab = vscode.window.createOutputChannel("LAB");
-    lab.appendLine(`Congratulations, your extension "lab" is now active! Scripts path: ${source}`);
+
+    // TreeView se skripty
     const treeDataProvider = new CustomTreeDataProvider(source);
-    const treeView = vscode.window.createTreeView('lab', { treeDataProvider, showCollapseAll: true, canSelectMany: true });
+    const treeView = vscode.window.createTreeView('lab', {
+        treeDataProvider,
+        showCollapseAll: true,
+        canSelectMany: false
+    });
     context.subscriptions.push(treeView);
 
-    // Command to run the PowerShell script
-    let runDisposable = vscode.commands.registerCommand('lab.runScript', async (item: CustomTreeItem) => {
-        const scriptPath = path.join(source, item.label);
+    // Spuštění skriptu přes Task
+    const runDisposable = vscode.commands.registerCommand('lab.runScript', async (item: CustomTreeItem) => {
+        const scriptPath = path.join(source!, item.label);
+        if (!fs.existsSync(scriptPath)) {
+            vscode.window.showErrorMessage(`Script not found: ${scriptPath}`);
+            return;
+        }
 
-        exec(`powershell.exe -executionpolicy bypass -file "${scriptPath}"`, (error, stdout, stderr) => {
-            if (error) {
-                lab.appendLine(`Error executing script: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                lab.appendLine(`Powershell Errors: ${stderr}`);
-                return;
-            }
-            // lab.appendLine(`Powershell Data: ${stdout}`);
-            vscode.window.showInformationMessage("Powershell Script finished successfully");
-        });
+        // Definice a spuštění shell tasku
+        const task = new vscode.Task(
+            { type: 'shell', task: 'Run LAB Script' },   // TaskDefinition
+            vscode.TaskScope.Workspace,
+            item.label,                                 // Label v seznamu běžících tasků
+            'LAB',                                      // Source (skupina)
+            new vscode.ShellExecution(`powershell -ExecutionPolicy Bypass -File "${scriptPath}"`)
+        );
+
+        vscode.tasks.executeTask(task);
     });
 
-    // Command to open the PowerShell script for editing
-    let editDisposable = vscode.commands.registerCommand('lab.editScript', (item: CustomTreeItem) => {
-        const scriptPath = path.join(source, item.label);
-
+    // Otevření skriptu k editaci
+    const editDisposable = vscode.commands.registerCommand('lab.editScript', (item: CustomTreeItem) => {
+        const scriptPath = path.join(source!, item.label);
         vscode.workspace.openTextDocument(scriptPath).then(document => {
             vscode.window.showTextDocument(document);
         });
     });
 
+    // Kliknutí na položku v TreeView spustí skript
     treeView.onDidChangeSelection(event => {
         const selectedItem = event.selection[0];
         if (selectedItem) {
-            // If the same item is clicked again, deselect it
-                treeDataProvider.refresh();
-                vscode.commands.executeCommand('lab.runScript', selectedItem);
+            treeDataProvider.refresh();
+            // vscode.commands.executeCommand('lab.runScript', selectedItem);
         }
     });
 
-    context.subscriptions.push(runDisposable);
-    context.subscriptions.push(editDisposable);
+    context.subscriptions.push(runDisposable, editDisposable);
 }
 
-class CustomTreeDataProvider implements vscode.TreeDataProvider<CustomTreeItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<CustomTreeItem | undefined | null | void> = new vscode.EventEmitter<CustomTreeItem | undefined | null | void>();
+export function deactivate() {}
 
-    refresh() {
-        this._onDidChangeTreeData.fire();
-    }
-    folderPath: string;
-    constructor(folderPath: string) {
-        this.folderPath = folderPath;
-    }
-
-    getTreeItem(element: CustomTreeItem): vscode.TreeItem {
-        return element;
-    }
-
-    getChildren(element?: CustomTreeItem): Thenable<CustomTreeItem[]> {
-        if (element) {
-            return Promise.resolve([]);
-        } else {
-            return Promise.resolve(this.getFilesInFolder(this.folderPath));
-        }
-    }
-
-    getFilesInFolder(folderPath: string): CustomTreeItem[] {
-        try {
-            const files = fs.readdirSync(folderPath);
-            return files.map(file => new CustomTreeItem(file, vscode.TreeItemCollapsibleState.None));
-        } catch (error) {
-            console.error('Error reading folder:', error);
-            return [];
-        }
-    }
-}
-
-class CustomTreeItem extends vscode.TreeItem {
-    constructor(
-        public readonly label: string,
-        collapsibleState: vscode.TreeItemCollapsibleState
-    ) {
-        super(label, collapsibleState);
-        this.contextValue = 'scriptItem';
-    }
-}
-
-export function deactivate() { }
